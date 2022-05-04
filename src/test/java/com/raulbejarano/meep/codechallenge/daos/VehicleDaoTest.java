@@ -2,6 +2,7 @@ package com.raulbejarano.meep.codechallenge.daos;
 
 import com.raulbejarano.meep.codechallenge.dtos.VehicleDto;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,6 @@ public class VehicleDaoTest {
     public void setup(){
         VEHICLES.add(VEHICLE_A);
         VEHICLES.add(VEHICLE_B);
-    }
-
-    @Test
-    public void givenAEmptySetWhenListedThenSizeIsZero(){
-        List<VehicleDto> vehicleDtoList = vehicleDao.list();
-        assertEquals(0,vehicleDtoList.size());
     }
 
     @Test
