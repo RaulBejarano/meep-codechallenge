@@ -15,3 +15,33 @@ parámetros lowerLeftLatLon y upperRightLatLon dentro de la zona de
 Lisboa.
 - aplica el filtro `companyZoneIds=545,467,473` que devuelve datos sólo de
 tres empresas de motosharing y carsharing que operan en Lisboa.
+
+
+## Ejemplo
+La llamada 1 al API de Meep retorna:
+```
+[
+  "A",
+  "B"
+]
+```
+
+La llamada 2 al API de Meep retorna:
+```
+[
+  "B",
+  "C"
+]
+```
+
+La solución implementada debería devolver algo como:
+```
+{
+  added:[
+    "C"
+  ],
+  removed: [
+    "A"
+  ]
+}
+```
