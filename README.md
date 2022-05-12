@@ -45,3 +45,35 @@ La solución implementada debería devolver algo como:
   ]
 }
 ```
+
+## Preguntas  y respuestas
+
+Te agradeceríamos que respondieras a las siguientes cuestiones:
+- **¿Cómo de escalable es tu solución propuesta?**
+
+Es relativamente escalable pero puede presentar ciertos retos. En primer lugar la persistencia debería hacerse en una base de datos en lugar de en memoria utilizando un esquema más o menos asi:
+
+Base de datos relacional:
+```text
+Petición(parámetros) <== 1:n ==> Vehicle  // Para guardar los vehículos de la última petición
+Petición(parámetros) <== 1:n ==> VehicleDiff()  // Para guardar los vehículos añadidos y eliminados (debería haber un flag que lo indique)
+```
+Quizá en este caso de uso concreto pueda funcionar bien una base de datos no relacional con el siguiente esquema de documento:
+```text
+Petición:
+  params: String
+  lastResult: [Vehicles]
+  diff:{
+    added:[Vehicles]
+    removed:[Vehicles]
+    updatedAt: Date
+  }
+```
+
+La escalabilidad también presenta otro problema. Puede causar sobrecarga al lanzar varias llamadas a la vez al mismo API y requeriría de algún tipo de planificador o proceso que mire las llamadas pendientes cada x tiempo y, si es posible, dotar de algo de aleatoriedad a la generación de los tiempos de ejecución de la siguiente iteración (por parámetros). Es decir, que en lugar de ser 30 min fijos que pueda ser 30 min + tiempo aleatorio.
+
+- **¿Qué problemas a futuro podría presentar? Si has detectado alguno, ¿qué
+alternativas propones para solventar dichos problemas?**
+
+Además de los presentados arriba relacionados con la escalabilidad diría que hay poca flexibilidad en la recogida de datos del API a la que se llama. Este problema podría solucionarse implementando una solución que separe más las capas y que no use el mismo DTO para recoger los datos del API y para almacenar la información. Para ello habría que mapear los resultados obtenidos en las llamadas a APIs en un objeto común con los datos que se quieran almacenar. En esta solución también vendría bien una base de datos no relacional basada en documentos.
+
