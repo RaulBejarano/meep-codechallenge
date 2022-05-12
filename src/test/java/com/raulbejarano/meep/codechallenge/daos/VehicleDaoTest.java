@@ -1,8 +1,8 @@
 package com.raulbejarano.meep.codechallenge.daos;
 
+import com.raulbejarano.meep.codechallenge.dtos.DiffDto;
 import com.raulbejarano.meep.codechallenge.dtos.VehicleDto;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +32,30 @@ public class VehicleDaoTest {
             .id("C")
             .build();
 
-    private final List<VehicleDto> VEHICLES = new ArrayList<>();
+    private final List<VehicleDto> VEHICLES_1 = new ArrayList<>();
+    private final List<VehicleDto> VEHICLES_2 = new ArrayList<>();
 
     @BeforeAll
     public void setup(){
-        VEHICLES.add(VEHICLE_A);
-        VEHICLES.add(VEHICLE_B);
+        VEHICLES_1.add(VEHICLE_A);
+        VEHICLES_1.add(VEHICLE_B);
+
+        VEHICLES_2.add(VEHICLE_B);
+        VEHICLES_2.add(VEHICLE_C);
     }
 
     @Test
     public void givenAListOfVehiclesWhenUpdatedThenListReturnsResults(){
-        vehicleDao.update(VEHICLES);
+        vehicleDao.update(VEHICLES_1);
         List<VehicleDto> vehicleDtoList = vehicleDao.list();
         assertNotEquals(0,vehicleDtoList.size());
     }
 
     @Test
     public void givenAListOfVehiclesWhenAddingOneThenListReturnsOneMoreResult(){
-        vehicleDao.update(VEHICLES);
+        vehicleDao.update(VEHICLES_1);
 
-        List<VehicleDto> updatedList = new ArrayList<>(VEHICLES);
+        List<VehicleDto> updatedList = new ArrayList<>(VEHICLES_1);
         updatedList.add(VEHICLE_C);
         vehicleDao.update(updatedList);
 
@@ -61,7 +65,7 @@ public class VehicleDaoTest {
 
     @Test
     public void givenAListOfVehiclesWhenAddingOneAndRemovingOneThenListReturnsUpdatedVehicles(){
-        vehicleDao.update(VEHICLES);
+        vehicleDao.update(VEHICLES_1);
 
         List<VehicleDto> updatedList = new ArrayList<>();
         updatedList.add(VEHICLE_B);
@@ -72,6 +76,20 @@ public class VehicleDaoTest {
         assertEquals(2 ,vehicleDtoList.size());
 
         assertEquals(updatedList, vehicleDtoList);
+    }
+
+    @Test
+    public void givenTwoCallsWhenGettingDiffThenReturnsAddedAndRemoved(){
+        vehicleDao.update(VEHICLES_1);
+        vehicleDao.update(VEHICLES_2);
+
+        DiffDto diff = vehicleDao.getDiff();
+
+        assertEquals(1, diff.getAdded().size());
+        assertEquals(1, diff.getRemoved().size());
+
+        assertEquals(VEHICLE_A, diff.getRemoved().get(0));
+        assertEquals(VEHICLE_C, diff.getAdded().get(0));
     }
 
 }
